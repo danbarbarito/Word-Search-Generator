@@ -14,12 +14,14 @@ enum direction{
 	DOWN_RIGHT
 };
 
+typedef int point[2]; //Declare a point type that represents a point on the grid
+
 class Generator{
 	char grid[10][10]; //Create a 10x10 grid
 	public:
 		Generator();
 		char GenerateRandomChar();
-		bool CanInsert(const char word[], direction x);
+		bool CanInsert(const char word[], point start, direction x);
 		void ClearGrid();
 		void FillGrid();
 };
@@ -40,8 +42,8 @@ void Generator::ClearGrid(){
 	}
 }
 
-//Checks if word can be inserted in the grid
-bool Generator::CanInsert(const char word[], direction x){
+//Checks if word can be inserted in the grid at the given start point
+bool Generator::CanInsert(const char word[], point start, direction x){
 	return true;
 }
 
@@ -63,6 +65,6 @@ int main(){
 	srand (time(NULL));
 	Generator gen;
 	gen.ClearGrid();
-	cout << gen.CanInsert("test",UP) << endl;
+	//int startPos[2] = {1,2};
 	return 0;
 }

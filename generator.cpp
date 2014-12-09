@@ -37,7 +37,7 @@ char Generator::GenerateRandomChar(){
 void Generator::ClearGrid(){
 	for(int i=0;i<10;i++){
 		for(int k=0;k<10;k++){
-			grid[i][k] = 0; //Set every empty value to a random character
+			grid[i][k] = 0; //Empty every value
 		}
 	}
 }

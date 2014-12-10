@@ -18,12 +18,14 @@ typedef int point[2]; //Declare a point type that represents a point on the grid
 
 class Generator{
 	char grid[10][10]; //Create a 10x10 grid
+	const char NULL_CHAR = 'x'; //The null character will be a lowercase x
 	public:
 		Generator();
 		char GenerateRandomChar();
 		bool CanInsert(const char word[], point start, direction x);
 		void ClearGrid();
 		void FillGrid();
+		void PrintGrid();
 };
 
 Generator::Generator(){
@@ -37,7 +39,7 @@ char Generator::GenerateRandomChar(){
 void Generator::ClearGrid(){
 	for(int i=0;i<10;i++){
 		for(int k=0;k<10;k++){
-			grid[i][k] = 0; //Empty every value
+			grid[i][k] = NULL_CHAR; //Every empty value will be a lowercase x
 		}
 	}
 }
@@ -58,6 +60,20 @@ void Generator::FillGrid(){
 	}
 }
 
+//Replaces empty tiles with a random character
+void Generator::PrintGrid(){
+	for(int i=0;i<10;i++){
+		for(int k=0;k<10;k++){
+			if(k == 9){
+				printf("%c\n",grid[i][k]); //Append a newline if it is on the last column
+			}
+			else{
+				printf("%c",grid[i][k]);
+			}
+		}
+	}
+}
+
 
 
 int main(){
@@ -65,6 +81,7 @@ int main(){
 	srand (time(NULL));
 	Generator gen;
 	gen.ClearGrid();
+	gen.PrintGrid();
 	//int startPos[2] = {1,2};
 	return 0;
 }

@@ -27,3 +27,6 @@
 *.out
 *.app
 generator
+
+# Blog assets
+blog-assets/

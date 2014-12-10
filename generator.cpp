@@ -2,6 +2,7 @@
 #include <cstdio>
 #include <stdlib.h>
 #include <cstring>
+#include <cctype>
 using namespace std;
 
 enum direction{
@@ -21,13 +22,14 @@ class Generator{
 	char grid[10][10]; //Create a 10x10 grid
 	char NULL_CHAR; //The character that represents a null value
 	public:
-		Generator();
-		char GenerateRandomChar();
-		bool CanInsert(const char word[], point start, direction d);
-		void ClearGrid();
-		void FillGrid();
-		void PrintGrid();
-		point ShiftPoint(point start, direction d);
+	Generator();
+	char GenerateRandomChar();
+	bool CanInsert(char* word, point start, direction d);
+	void InsertWord(char* word, point start, direction d);
+	void ClearGrid();
+	void FillGrid();
+	void PrintGrid();
+	point ShiftPoint(point start, direction d);
 };
 
 Generator::Generator(){
@@ -48,7 +50,7 @@ void Generator::ClearGrid(){
 }
 
 //Checks if word can be inserted in the grid at the given start point
-bool Generator::CanInsert(const char word[], point start, direction d){
+bool Generator::CanInsert(char* word, point start, direction d){
 	int i = 0;
 	point newPoint = start;
 	printf("Length of the word %s: %d\n",word,(int)strlen(word));
@@ -71,7 +73,7 @@ bool Generator::CanInsert(const char word[], point start, direction d){
 void Generator::FillGrid(){
 	for(int i=0;i<10;i++){
 		for(int k=0;k<10;k++){
-			if(grid[i][k] == 0){
+			if(grid[i][k] == NULL_CHAR){
 				grid[i][k] = GenerateRandomChar(); //Set every null value to a random character
 			}
 		}
@@ -99,32 +101,32 @@ point Generator::ShiftPoint(point start, direction d){
 	point newPoint;
 	switch(d){
 		case UP:
-			newPoint.i = i;
-			newPoint.k = k-1;
-			break;
-		case DOWN:
-			newPoint.i = i;
-			newPoint.k = k+1;
-			break;
-		case LEFT:
 			newPoint.i = i-1;
 			newPoint.k = k;
 			break;
-		case RIGHT:
+		case DOWN:
 			newPoint.i = i+1;
 			newPoint.k = k;
+			break;
+		case LEFT:
+			newPoint.i = i;
+			newPoint.k = k-1;
+			break;
+		case RIGHT:
+			newPoint.i = i;
+			newPoint.k = k+1;
 			break;
 		case UP_LEFT:
 			newPoint.i = i-1;
 			newPoint.k = k-1;
 			break;
 		case UP_RIGHT:
-			newPoint.i = i+1;
-			newPoint.k = k-1;
-			break;
-		case DOWN_LEFT:
 			newPoint.i = i-1;
 			newPoint.k = k+1;
+			break;
+		case DOWN_LEFT:
+			newPoint.i = i+1;
+			newPoint.k = k-1;
 			break;
 		case DOWN_RIGHT:
 			newPoint.i = i+1;
@@ -144,16 +146,31 @@ point Generator::ShiftPoint(point start, direction d){
 }
 
 
+void Generator::InsertWord(char* word, point start, direction d){
+	if(CanInsert(word,start,d)){
+		int i = 0;
+		point newPoint = start;
+		while(i < (int)strlen(word))
+		{
+			newPoint = ShiftPoint(newPoint,d);
+			grid[newPoint.i][newPoint.k] = (char)toupper(word[i]);
+			i++;
+		}
+	}
+} 
+
+
 int main(){
 	/* initialize random seed: */
 	srand (time(NULL));
 	Generator gen;
 	gen.ClearGrid();
-	gen.PrintGrid();
 	point startPoint;
 	startPoint.i = 5;
 	startPoint.k = 5;
-	const char* word = "Test";
-	printf("Can insert %s: %d\n",word,gen.CanInsert(word,startPoint,UP));
+	char* word = "Test";
+	gen.InsertWord(word,startPoint,DOWN_RIGHT);
+	gen.FillGrid();
+	gen.PrintGrid();
 	return 0;
 }

@@ -5,6 +5,7 @@
 #include <cctype>
 using namespace std;
 
+//Enum containing all the different direction the words can face
 enum direction{
 	UP,
 	DOWN,
@@ -23,13 +24,13 @@ class Generator{
 	char NULL_CHAR; //The character that represents a null value
 	public:
 	Generator();
-	char GenerateRandomChar();
-	bool CanInsert(char* word, point start, direction d);
-	void InsertWord(char* word);
-	void ClearGrid();
-	void FillGrid();
-	void PrintGrid();
-	point ShiftPoint(point start, direction d);
+	char GenerateRandomChar(); //returns a random character
+	bool CanInsert(char* word, point start, direction d); //Checks if the given word can be inserted at the start position facing direction d
+	void InsertWord(char* word); //Place word at a random, valid location facing a random direction
+	void ClearGrid(); //Sets the grid to be all null values
+	void FillGrid(); //Fills null values with random characters
+	void PrintGrid(); //Prints the grid to stdout
+	point ShiftPoint(point start, direction d); //Returns the shifted point
 };
 
 Generator::Generator(){
@@ -37,7 +38,7 @@ Generator::Generator(){
 }
 
 char Generator::GenerateRandomChar(){
-	return 'A' + rand()%26;
+	return 'A' + rand()%26; //leet way to generate a random character
 }
 
 //Sets all values in grid to a null character
@@ -53,7 +54,7 @@ void Generator::ClearGrid(){
 bool Generator::CanInsert(char* word, point start, direction d){
 	int i = 0;
 	point newPoint = start;
-	while(i < (int)strlen(word))
+	while(i < (int)strlen(word)) //Iterates through the word char array
 	{
 		//Attempt to shift the point
 		try{
@@ -107,40 +108,40 @@ point Generator::ShiftPoint(point start, direction d){
 	point newPoint;
 	switch(d){
 		case UP:
-			newPoint.i = i-1;
-			newPoint.k = k;
+			newPoint.i = i-1; //Move up a row
+			newPoint.k = k;   //Column stays the same
 			break;
 		case DOWN:
-			newPoint.i = i+1;
-			newPoint.k = k;
+			newPoint.i = i+1;  //Move down a row
+			newPoint.k = k;    //Column stays the same
 			break;
 		case LEFT:
-			newPoint.i = i;
-			newPoint.k = k-1;
+			newPoint.i = i; //Row stays the same
+			newPoint.k = k-1; //Column moves left
 			break;
 		case RIGHT:
-			newPoint.i = i;
-			newPoint.k = k+1;
+			newPoint.i = i; //Row stays the same
+			newPoint.k = k+1; //Column moves right
 			break;
 		case UP_LEFT:
-			newPoint.i = i-1;
-			newPoint.k = k-1;
+			newPoint.i = i-1; //Row moves up
+			newPoint.k = k-1; //Column moves left
 			break;
 		case UP_RIGHT:
-			newPoint.i = i-1;
-			newPoint.k = k+1;
+			newPoint.i = i-1; //Row moves up
+			newPoint.k = k+1; //Column moves right
 			break;
 		case DOWN_LEFT:
-			newPoint.i = i+1;
-			newPoint.k = k-1;
+			newPoint.i = i+1; //Row moves down
+			newPoint.k = k-1; //Column moves to left
 			break;
 		case DOWN_RIGHT:
-			newPoint.i = i+1;
-			newPoint.k = k+1;
+			newPoint.i = i+1; //Row moves down
+			newPoint.k = k+1; //Column moves right
 			break;
 		default:
-			newPoint.i = i;
-			newPoint.k = k;
+			newPoint.i = i; //Row stays the same
+			newPoint.k = k; //Column stays the same
 			break;
 	}
 	//Handle out of bounds errors
@@ -177,13 +178,13 @@ int main(){
 	srand (time(NULL));
 	Generator gen;
 	gen.ClearGrid();
-	char* word = "testword";
+	char* word = "qqqqqqq";
 	gen.InsertWord(word);
-	word = "potato";
+	word = "ppppppppp";
 	gen.InsertWord(word);
-	word = "dingus";
+	word = "wwwwwwww";
 	gen.InsertWord(word);
-	word = "derp";
+	word = "zzzzz";
 	gen.InsertWord(word);
 	gen.FillGrid();
 	gen.PrintGrid();

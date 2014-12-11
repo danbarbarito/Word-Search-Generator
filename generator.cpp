@@ -5,6 +5,8 @@
 #include <cctype>
 using namespace std;
 
+const int GRID_SIZE = 50;
+
 //Enum containing all the different direction the words can face
 enum direction{
 	UP,
@@ -20,7 +22,7 @@ enum direction{
 struct point{int i,k;}; //Declare a point structure that represents a point on the grid
 
 class Generator{
-	char grid[10][10]; //Create a 10x10 grid
+	char grid[GRID_SIZE][GRID_SIZE]; //Create a nxn grid
 	char NULL_CHAR; //The character that represents a null value
 	public:
 	Generator();
@@ -43,8 +45,8 @@ char Generator::GenerateRandomChar(){
 
 //Sets all values in grid to a null character
 void Generator::ClearGrid(){
-	for(int i=0;i<10;i++){
-		for(int k=0;k<10;k++){
+	for(int i=0;i<GRID_SIZE;i++){
+		for(int k=0;k<GRID_SIZE;k++){
 			grid[i][k] = NULL_CHAR; //Every empty value will be a lowercase x
 		}
 	}
@@ -78,8 +80,8 @@ bool Generator::CanInsert(char* word, point start, direction d){
 
 //Replaces empty tiles with a random character
 void Generator::FillGrid(){
-	for(int i=0;i<10;i++){
-		for(int k=0;k<10;k++){
+	for(int i=0;i<GRID_SIZE;i++){
+		for(int k=0;k<GRID_SIZE;k++){
 			if(grid[i][k] == NULL_CHAR){
 				grid[i][k] = GenerateRandomChar(); //Set every null value to a random character
 			}
@@ -89,9 +91,9 @@ void Generator::FillGrid(){
 
 //Prints the grid to stdout
 void Generator::PrintGrid(){
-	for(int i=0;i<10;i++){
-		for(int k=0;k<10;k++){
-			if(k == 9){
+	for(int i=0;i<GRID_SIZE;i++){
+		for(int k=0;k<GRID_SIZE;k++){
+			if(k == GRID_SIZE-1){
 				printf("%c \n",grid[i][k]); //Append a newline if it is on the last column
 			}
 			else{
@@ -145,7 +147,7 @@ point Generator::ShiftPoint(point start, direction d){
 			break;
 	}
 	//Handle out of bounds errors
-	if(newPoint.i < -1 || newPoint.i > 10 || newPoint.k < -1 || newPoint.k > 10)
+	if(newPoint.i < -1 || newPoint.i > GRID_SIZE || newPoint.k < -1 || newPoint.k > GRID_SIZE)
 	{
 		throw "Out of Bounds";
 	}
@@ -157,8 +159,8 @@ void Generator::InsertWord(char* word){
 	point start;
 	direction d;
 	do{
-		start.i = rand() % 10; //set to a random row
-		start.k = rand() % 10; //set to a random column
+		start.i = rand() % GRID_SIZE; //set to a random row
+		start.k = rand() % GRID_SIZE; //set to a random column
 		d = direction(rand() % 8); //get a random direction
 	}
 	while(!CanInsert(word,start,d));

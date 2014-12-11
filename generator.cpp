@@ -157,9 +157,9 @@ void Generator::InsertWord(char* word){
 	point start;
 	direction d;
 	do{
-		start.i = rand() % 10;
-		start.k = rand() % 10;
-		d = direction(rand() % 8);
+		start.i = rand() % 10; //set to a random row
+		start.k = rand() % 10; //set to a random column
+		d = direction(rand() % 8); //get a random direction
 	}
 	while(!CanInsert(word,start,d));
 	int i = 0;

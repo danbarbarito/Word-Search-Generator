@@ -25,7 +25,7 @@ class Generator{
 	Generator();
 	char GenerateRandomChar();
 	bool CanInsert(char* word, point start, direction d);
-	void InsertWord(char* word, point start, direction d);
+	void InsertWord(char* word);
 	void ClearGrid();
 	void FillGrid();
 	void PrintGrid();
@@ -53,16 +53,22 @@ void Generator::ClearGrid(){
 bool Generator::CanInsert(char* word, point start, direction d){
 	int i = 0;
 	point newPoint = start;
-	printf("Length of the word %s: %d\n",word,(int)strlen(word));
 	while(i < (int)strlen(word))
 	{
 		//Attempt to shift the point
 		try{
-			newPoint = ShiftPoint(newPoint,d);
-			i++;
+			if(grid[newPoint.i][newPoint.k] == NULL_CHAR){
+				newPoint = ShiftPoint(newPoint,d);
+				i++;
+			}
+			else{
+				return false;
+			}
 		}
 		catch(const char* msg) //Returns false if the out of bounds error occurs
 		{
+			/*cout << "Cannot insert one of the words.  Please try again or choose a new word." << endl;
+			exit(1);*/
 			return false;
 		}
 	}
@@ -85,10 +91,10 @@ void Generator::PrintGrid(){
 	for(int i=0;i<10;i++){
 		for(int k=0;k<10;k++){
 			if(k == 9){
-				printf("%c\n",grid[i][k]); //Append a newline if it is on the last column
+				printf("%c \n",grid[i][k]); //Append a newline if it is on the last column
 			}
 			else{
-				printf("%c",grid[i][k]);
+				printf("%c ",grid[i][k]);
 			}
 		}
 	}
@@ -138,7 +144,7 @@ point Generator::ShiftPoint(point start, direction d){
 			break;
 	}
 	//Handle out of bounds errors
-	if(newPoint.i < 0 || newPoint.i > 9 || newPoint.k < 0 || newPoint.k > 9)
+	if(newPoint.i < -1 || newPoint.i > 10 || newPoint.k < -1 || newPoint.k > 10)
 	{
 		throw "Out of Bounds";
 	}
@@ -146,16 +152,22 @@ point Generator::ShiftPoint(point start, direction d){
 }
 
 
-void Generator::InsertWord(char* word, point start, direction d){
-	if(CanInsert(word,start,d)){
-		int i = 0;
-		point newPoint = start;
-		while(i < (int)strlen(word))
-		{
-			newPoint = ShiftPoint(newPoint,d);
-			grid[newPoint.i][newPoint.k] = (char)toupper(word[i]);
-			i++;
-		}
+void Generator::InsertWord(char* word){
+	point start;
+	direction d;
+	do{
+		start.i = rand() % 10;
+		start.k = rand() % 10;
+		d = direction(rand() % 8);
+	}
+	while(!CanInsert(word,start,d));
+	int i = 0;
+	point newPoint = start;
+	while(i < (int)strlen(word))
+	{
+		grid[newPoint.i][newPoint.k] = (char)toupper(word[i]);
+		newPoint = ShiftPoint(newPoint,d);
+		i++;
 	}
 } 
 
@@ -165,11 +177,14 @@ int main(){
 	srand (time(NULL));
 	Generator gen;
 	gen.ClearGrid();
-	point startPoint;
-	startPoint.i = 5;
-	startPoint.k = 5;
-	char* word = "Test";
-	gen.InsertWord(word,startPoint,DOWN_RIGHT);
+	char* word = "testword";
+	gen.InsertWord(word);
+	word = "potato";
+	gen.InsertWord(word);
+	word = "dingus";
+	gen.InsertWord(word);
+	word = "derp";
+	gen.InsertWord(word);
 	gen.FillGrid();
 	gen.PrintGrid();
 	return 0;

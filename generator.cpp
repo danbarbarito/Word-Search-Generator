@@ -250,8 +250,14 @@ int main(int argc, char* argv[]){
 			output_file = "output";
 			break;
 		case 2:
+			if(strcmp(argv[1],"--help") == 0){
+				printf("Usage: ./generator <words list> <output file>\n");
+				exit(1);
+			}
+			else{
 			words_list = argv[1];
 			output_file = "output";
+			}
 			break;
 		case 3:
 			words_list = argv[1];

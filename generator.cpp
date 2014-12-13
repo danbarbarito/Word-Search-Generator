@@ -3,9 +3,13 @@
 #include <stdlib.h>
 #include <cstring>
 #include <cctype>
+#include <fstream>
+
+
 using namespace std;
 
-const int GRID_SIZE = 50;
+
+const int GRID_SIZE = 10;
 
 //Enum containing all the different direction the words can face
 enum direction{
@@ -24,15 +28,19 @@ struct point{int i,k;}; //Declare a point structure that represents a point on t
 class Generator{
 	char grid[GRID_SIZE][GRID_SIZE]; //Create a nxn grid
 	char NULL_CHAR; //The character that represents a null value
+	string words[7];
 	public:
 	Generator();
 	char GenerateRandomChar(); //returns a random character
-	bool CanInsert(char* word, point start, direction d); //Checks if the given word can be inserted at the start position facing direction d
-	void InsertWord(char* word); //Place word at a random, valid location facing a random direction
+	bool CanInsert(const char* word, point start, direction d); //Checks if the given word can be inserted at the start position facing direction d
+	void InsertWord(const char* word); //Place word at a random, valid location facing a random direction
 	void ClearGrid(); //Sets the grid to be all null values
 	void FillGrid(); //Fills null values with random characters
 	void PrintGrid(); //Prints the grid to stdout
 	point ShiftPoint(point start, direction d); //Returns the shifted point
+	void ReadFile(char* filename);
+	void InsertWordsFromFile();
+	void PuzzleToFile(char* filename);
 };
 
 Generator::Generator(){
@@ -53,7 +61,7 @@ void Generator::ClearGrid(){
 }
 
 //Checks if word can be inserted in the grid at the given start point
-bool Generator::CanInsert(char* word, point start, direction d){
+bool Generator::CanInsert(const char* word, point start, direction d){
 	int i = 0;
 	point newPoint = start;
 	while(i < (int)strlen(word)) //Iterates through the word char array
@@ -91,10 +99,14 @@ void Generator::FillGrid(){
 
 //Prints the grid to stdout
 void Generator::PrintGrid(){
+	printf("Generated Puzzle:\n");
 	for(int i=0;i<GRID_SIZE;i++){
 		for(int k=0;k<GRID_SIZE;k++){
-			if(k == GRID_SIZE-1){
-				printf("%c \n",grid[i][k]); //Append a newline if it is on the last column
+			if(k == 0){
+				printf("\t%c ",grid[i][k]); //Puts a tab at the first column to make it look pretty
+			}
+			else if(k == GRID_SIZE-1){
+				printf("%c\n",grid[i][k]); //Append a newline if it is on the last column
 			}
 			else{
 				printf("%c ",grid[i][k]);
@@ -155,7 +167,7 @@ point Generator::ShiftPoint(point start, direction d){
 }
 
 
-void Generator::InsertWord(char* word){
+void Generator::InsertWord(const char* word){
 	point start;
 	direction d;
 	do{
@@ -174,21 +186,99 @@ void Generator::InsertWord(char* word){
 	}
 } 
 
+void Generator::ReadFile(char* filename){
+	ifstream wordsFile(filename);
+	string word;
+	int line = 0;
+	if(wordsFile.is_open()){
+		printf("Reading file '%s'\n",filename);
+		while(getline(wordsFile,word)){
+			words[line] = word;
+			line++;
+			if(line == 8){
+				throw "Words list can not have more than 7 words";
+			}
+			if(word.length() < 2 || word.length() > GRID_SIZE-1){
+				throw "Words must be at least two characters and no more than the grid size";
+			}
+		}
+	}
+	else{
+		throw "Cannot open words list file";
+	}
+}
 
-int main(){
+void Generator::InsertWordsFromFile(){
+	//Iterate through all of the indexes in the array and insert them into the grid
+	for(int i=0;i<(int)(sizeof(words)/sizeof(words[0]));i++){
+		string word = words[i];
+		InsertWord(word.c_str()); //Convert the word (std::string) into a useable char* array
+	}
+}
+
+void Generator::PuzzleToFile(char* filename){
+	ofstream output(filename);
+	char c;
+	if(output.is_open()){
+		printf("Writing to file '%s'\n",filename);
+		for(int i=0;i<GRID_SIZE;i++){
+			for(int k=0;k<GRID_SIZE;k++){
+				if(k == GRID_SIZE-1){
+					c = grid[i][k];
+					output.put(c);
+					output.put('\n');	//Append a newline if it is on the last column
+				}
+				else{
+					c = grid[i][k];
+					output.put(c);
+				}
+		}}
+	}
+	else{
+		throw "Cannot create output file";
+	}
+}
+
+int main(int argc, char* argv[]){
 	/* initialize random seed: */
 	srand (time(NULL));
+	char* words_list;
+	char* output_file;
+	switch(argc){
+		case 1:
+			words_list = "words_list";
+			output_file = "output";
+			break;
+		case 2:
+			words_list = argv[1];
+			output_file = "output";
+			break;
+		case 3:
+			words_list = argv[1];
+			output_file = argv[2];
+			break;
+		default:
+			printf("Usage: ./generator <words list> <output file>\n");
+			exit(1);
+	}
 	Generator gen;
+	try{
+		gen.ReadFile(words_list);
+	}
+	catch(const char* msg){
+		cout << msg << endl;
+		exit(1);
+	}
 	gen.ClearGrid();
-	char* word = "qqqqqqq";
-	gen.InsertWord(word);
-	word = "ppppppppp";
-	gen.InsertWord(word);
-	word = "wwwwwwww";
-	gen.InsertWord(word);
-	word = "zzzzz";
-	gen.InsertWord(word);
+	gen.InsertWordsFromFile();
 	gen.FillGrid();
 	gen.PrintGrid();
+	try{
+		gen.PuzzleToFile(output_file);
+	}
+	catch(const char* msg){
+		cout << msg << endl;
+		exit(1);
+	}
 	return 0;
 }
